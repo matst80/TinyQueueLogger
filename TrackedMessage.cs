@@ -34,6 +34,7 @@ namespace QueueLogger
         public string TrackedId { get; set; }
         public string Source { get; set; }
         public string Type { get; set; }
+        public bool IsData { get; set; }
         public LogLevel Level { get; set; }
         public string[] Tags { get; set; }
 
@@ -55,8 +56,10 @@ namespace QueueLogger
             foreach (var prp in this.GetType().GetProperties())
             {
                 var val = prp.GetValue(this, null);
-                if (val != null)
-                    ret.Add(prp.Name, val.ToString());
+                if (val != null) {
+                    if (prp.PropertyType.IsEnum) val = val.ToString();
+                    ret.Add(prp.Name, val);
+                }
             }
         }
 
