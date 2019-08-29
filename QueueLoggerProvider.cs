@@ -7,9 +7,14 @@ namespace QueueLogger
     [ProviderAlias("Queue")]
     public class QueueLoggerProvider : ILoggerProvider
     {
-        public QueueLoggerProvider(QueueLoggerSettings settings)
+        public QueueLoggerProvider()
         {
-            if (settings.Source == null)
+
+        }
+
+        public QueueLoggerProvider(QueueLoggerOptions settings)
+        {
+            if (settings.Source == null || settings.Source=="Unknown")
             {
                 settings.Source = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
             }
@@ -17,11 +22,11 @@ namespace QueueLogger
         }
 
         private readonly ConcurrentDictionary<string, QueueLogger> _loggers = new ConcurrentDictionary<string, QueueLogger>();
-        private readonly QueueLoggerSettings settings;
+        private readonly QueueLoggerOptions settings;
 
         public ILogger CreateLogger(string categoryName)
         {
-            return _loggers.GetOrAdd(categoryName, new QueueLogger(new QueueClient(settings.ConnectionString, settings.Queue), settings.Source, settings.MinLogLevel));
+            return _loggers.GetOrAdd(categoryName, new QueueLogger(settings));
         }
 
         public void Dispose()

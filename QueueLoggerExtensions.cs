@@ -1,18 +1,39 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace QueueLogger
 {
+    internal class QueueLoggerOptionsSetup : ConfigureFromConfigurationOptions<QueueLoggerOptions>
+    {
+        public QueueLoggerOptionsSetup(ILoggerProviderConfiguration<QueueLoggerProvider> providerConfiguration)
+            : base(providerConfiguration.Configuration)
+        {
+        }
+    }
 
     public static class QueueLoggerExtensions
     {
+        public static void QueueLog(this ILogger logger, TrackedMessage message)
+        {
+            if (QueueLogger.Instance!=null)
+            {
+                QueueLogger.Instance.Log(message);
+            }
+            else
+            {
+                logger.LogWarning("QueueLogger not started, please check configuration");
+            }
+        }
+
+
         public static ILoggingBuilder AddQueue(this ILoggingBuilder builder, string connectionString, string queue, string source, LogLevel minLevel = LogLevel.Information)
         {
-            return builder.AddQueue(new QueueLoggerSettings()
+            return builder.AddQueue(new QueueLoggerOptions()
             {
                 ConnectionString = connectionString,
                 Queue = queue,
@@ -21,20 +42,20 @@ namespace QueueLogger
             });
         }
 
-        public static ILoggingBuilder AddQueue(this ILoggingBuilder builder, Action<QueueLoggerSettings> settings)
+        public static ILoggingBuilder AddQueue(this ILoggingBuilder builder, Action<QueueLoggerOptions> settings)
         {
             if (settings == null)
             {
                 throw new ArgumentNullException(nameof(settings));
             }
 
-            var config = new QueueLoggerSettings();
+            var config = new QueueLoggerOptions();
             settings(config);
 
             return builder.AddQueue(config);
         }
 
-        public static ILoggingBuilder AddQueue(this ILoggingBuilder builder, QueueLoggerSettings config)
+        public static ILoggingBuilder AddQueue(this ILoggingBuilder builder, QueueLoggerOptions config)
         {
             if (config == null)
             {
@@ -47,10 +68,18 @@ namespace QueueLogger
             return builder;
         }
 
-
-        public static ILoggerFactory AddQueue(this ILoggerFactory factory, Action<QueueLoggerSettings> settings)
+        public static ILoggerFactory AddQueue(
+            this ILoggerFactory factory,
+            QueueLoggerOptions settings)
         {
-            var config = new QueueLoggerSettings() { };
+            factory.AddProvider(new QueueLoggerProvider(settings));
+            return factory;
+        }
+
+
+        public static ILoggerFactory AddQueue(this ILoggerFactory factory, Action<QueueLoggerOptions> settings)
+        {
+            var config = new QueueLoggerOptions() { };
 
             settings(config);
 

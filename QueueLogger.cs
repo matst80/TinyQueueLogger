@@ -11,6 +11,7 @@ namespace QueueLogger
             this.client = client;
             this.source = source;
             this.minLevel = minLogLevel;
+            Instance = this;
         }
 
         public QueueLogger(string connectionString, string queueName, string source) : this(new QueueClient(connectionString, queueName), source)
@@ -18,10 +19,16 @@ namespace QueueLogger
 
         }
 
+        public QueueLogger(IQueueLoggerOptions config) : this(new QueueClient(config.ConnectionString,config.Queue),config.Source)
+        {
+            this.minLevel = config.MinLogLevel;
+        }
+
         private object currentState;
         private readonly QueueClient client;
         private string source;
         private LogLevel minLevel;
+        internal static QueueLogger Instance;
 
         public IDisposable BeginScope<TState>(TState state)
         {
