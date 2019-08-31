@@ -1,20 +1,10 @@
 ﻿using System;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
-using Microsoft.Extensions.Options;
 
 namespace QueueLogger
 {
-    internal class QueueLoggerOptionsSetup : ConfigureFromConfigurationOptions<QueueLoggerOptions>
-    {
-        public QueueLoggerOptionsSetup(ILoggerProviderConfiguration<QueueLoggerProvider> providerConfiguration)
-            : base(providerConfiguration.Configuration)
-        {
-        }
-    }
 
     public static class QueueLoggerExtensions
     {

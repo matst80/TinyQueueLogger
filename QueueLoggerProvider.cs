@@ -22,7 +22,7 @@ namespace QueueLogger
         }
 
         private readonly ConcurrentDictionary<string, QueueLogger> _loggers = new ConcurrentDictionary<string, QueueLogger>();
-        private readonly QueueLoggerOptions settings;
+        private readonly IQueueLoggerOptions settings;
 
         public ILogger CreateLogger(string categoryName)
         {
