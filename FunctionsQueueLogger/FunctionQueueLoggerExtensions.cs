@@ -18,10 +18,11 @@ namespace FunctionsQueueLogger
             return service;
         }
 
-        public static void Track(this ILogger logger, LogLevel level, string trackedId, object message, [System.Runtime.CompilerServices.CallerMemberName] string source = "")
+        public static void Track(this ILogger logger, LogLevel level, string trackedId, object message, string sessionId = "", [System.Runtime.CompilerServices.CallerMemberName] string source = "")
         {
             QueueLogger.Instance?.Log(new TrackedMessage(trackedId, message)
             {
+                SessionId = sessionId,
                 TrackedId = trackedId,
                 Level = level,
                 Source = source,

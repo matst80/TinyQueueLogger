@@ -6,6 +6,10 @@ using Newtonsoft.Json;
 
 namespace QueueLogger
 {
+    public interface ISessionObject
+    {
+        string SessionId { get; set; }
+    }
     public class TrackedMessage
     {
         public TrackedMessage(string id, string source, object message) : this(id, message)
@@ -40,6 +44,7 @@ namespace QueueLogger
         public bool IsData { get; set; }
         public LogLevel Level { get; set; }
         public string[] Tags { get; set; }
+        public string SessionId { get; set; }
 
         public string Message { get; set; }
         public int EventId { get; set; }
@@ -61,7 +66,8 @@ namespace QueueLogger
                 var val = prp.GetValue(this, null);
                 if (val != null)
                 {
-                    if (prp.PropertyType.IsEnum) val = val.ToString();
+                    if (prp.PropertyType.IsEnum)
+                        val = val.ToString();
                     ret.Add(prp.Name, val);
                 }
             }
