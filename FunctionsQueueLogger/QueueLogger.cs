@@ -7,21 +7,23 @@ namespace FunctionsQueueLogger
 {
     public class QueueLogger
     {
-        public QueueLogger(QueueClient client)
+        public QueueLogger(QueueClient client, string type)
         {
             this.client = client;
             Instance = this;
+            GlobalType = type;
         }
 
-        public QueueLogger(string connectionString, string queueName, string source) : this(new QueueClient(connectionString, queueName))
+        public QueueLogger(string connectionString, string queueName, string source, string type) : this(new QueueClient(connectionString, queueName), type)
         {
 
         }
 
-        public QueueLogger(QueueLoggerOptions config) : this(new QueueClient(config.ConnectionString, config.Queue))
+        public QueueLogger(QueueLoggerOptions config, string type) : this(new QueueClient(config.ConnectionString, config.Queue), type)
         {
         }
 
+        public string GlobalType { get; set; }
 
         private readonly QueueClient client;
         internal static QueueLogger Instance;
