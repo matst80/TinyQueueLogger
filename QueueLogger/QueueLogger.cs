@@ -21,7 +21,6 @@ namespace QueueLogger
 
         public QueueLogger(IQueueLoggerOptions config) : this(new QueueClient(config.ConnectionString,config.Queue),config.Source)
         {
-            this.minLevel = config.MinLogLevel;
         }
 
         private object currentState;
@@ -53,7 +52,7 @@ namespace QueueLogger
                 Log(new TrackedMessage(id, formatter(state, exception))
                 {
                     EventId = eventId.Id,
-                    Level = logLevel,
+                    Level = logLevel.ToString(),
                     Source = source,
                     Type = "Logger"
                 });

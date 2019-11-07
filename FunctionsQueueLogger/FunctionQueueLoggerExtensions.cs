@@ -1,36 +1,39 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QueueLogger;
-using System;
 
-namespace FunctionsQueueLogger
-{
-    public static class FunctionQueueLoggerExtensions
-    {
-        public static IServiceCollection AddQueueLogger(this IServiceCollection service, string globalType = "Serverless")
-        {
-            var logger = new QueueLogger(new Microsoft.Azure.ServiceBus.QueueClient(
-                    Environment.GetEnvironmentVariable("QueueLoggerConnectionString"),
-                    Environment.GetEnvironmentVariable("QueueLoggerQueue")),
-                    globalType);
+namespace FunctionsQueueLogger {
+    public static class FunctionQueueLoggerExtensions {
+        public static IServiceCollection AddQueueLogger (this IServiceCollection service, string connectionStringKey, string topicKey, string globalType = "Serverless") {
+            var logger = new QueueLogger (new Microsoft.Azure.ServiceBus.QueueClient (
+                    Environment.GetEnvironmentVariable (connectionStringKey),
+                    Environment.GetEnvironmentVariable (topicKey)),
+                globalType);
 
-            service.AddSingleton(logger);
+            service.AddSingleton (logger);
 
             return service;
         }
 
-        public static void Track(this ILogger logger, LogLevel level, string trackedId, object message, string sessionId = "", [System.Runtime.CompilerServices.CallerMemberName] string source = "", string type = "")
-        {
-            if (string.IsNullOrEmpty(type))
+        public static void Track (this ILogger log, LogLevel level, string trackedId, object message, string sessionId = "", string type = "", [System.Runtime.CompilerServices.CallerMemberName] string source = "") {
+            if (string.IsNullOrEmpty (type))
                 type = QueueLogger.Instance?.GlobalType;
-            QueueLogger.Instance?.Log(new TrackedMessage(trackedId, message)
-            {
+            QueueLogger.Instance?.Log (new TrackedMessage (trackedId, message) {
                 SessionId = sessionId,
-                TrackedId = trackedId,
-                Level = level,
-                Source = source,
-                Type = type
+                    TrackedId = trackedId,
+                    Level = level.ToString (),
+                    Source = source,
+                    Type = type
             });
+            if (message != null) {
+                if (message is Exception exception) {
+                    log?.LogError (new EventId (1, sessionId?? "nosessing"), exception, source);
+                }
+                else {
+                    log?.Log (level, $"{message?.ToString() ?? "No message supplied"} {sessionId??""} {trackedId??""}");
+                }
+            }
         }
     }
 }

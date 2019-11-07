@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Azure.ServiceBus;
+﻿using Microsoft.Azure.ServiceBus;
 using System.Text;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -42,7 +41,7 @@ namespace QueueLogger
         public string Source { get; set; }
         public string Type { get; set; }
         public bool IsData { get; set; }
-        public LogLevel Level { get; set; }
+        public string Level { get; set; }
         public string[] Tags { get; set; }
         public string SessionId { get; set; }
 

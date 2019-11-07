@@ -28,7 +28,6 @@ namespace QueueLogger
                 ConnectionString = connectionString,
                 Queue = queue,
                 Source = source,
-                MinLogLevel = minLevel
             });
         }
 
