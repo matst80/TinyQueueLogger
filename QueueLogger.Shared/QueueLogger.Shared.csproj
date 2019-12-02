@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.2.5</PackageVersion>
+    <PackageVersion>1.2.6/PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
