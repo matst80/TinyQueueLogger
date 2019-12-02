@@ -26,17 +26,24 @@ namespace QueueLogger
             }
             else
             {
-                try
+                if (message == null)
                 {
-                    Message = JsonConvert.SerializeObject(message, Formatting.Indented);
+                    Message = "";
                 }
-                catch
+                else
                 {
-                    Message = message.ToString();
+                    try
+                    {
+                        Message = JsonConvert.SerializeObject(message, Formatting.Indented);
+                    }
+                    catch
+                    {
+                        Message = message.ToString();
+                    }
                 }
             }
         }
-
+        public string Title { get; set; }
         public string TrackedId { get; set; }
         public string Source { get; set; }
         public string Type { get; set; }
